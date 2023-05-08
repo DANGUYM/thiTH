@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Time-based One-Time Pad Encryption</title>
+</head>
+
+<body>
+    <h1>Time-based One-Time Pad Encryption</h1>
+
+    <label for="message">Message:</label>
+    <input type="text" id="message" />
+    <button onclick="encryptAndDisplay()">Encrypt</button>
+
+    <h2>Encrypted Message:</h2>
+    <div id="encrypted"></div>
+
+    <button onclick="decryptAndDisplay()">Decrypt</button>
+
+    <h2>Decrypted Message:</h2>
+    <div id="decrypted"></div>
+
+    <script>
+        // Function to encrypt a message using time-based one-time pad
+        function encrypt(message) {
+            const key = new Date().getTime().toString();
+            let encryptedMessage = '';
+
+            for (let i = 0; i < message.length; i++) {
+                const charCode = message.charCodeAt(i);
+                const keyCharCode = key.charCodeAt(i % key.length);
+                const encryptedCharCode = charCode ^ keyCharCode;
+                encryptedMessage += String.fromCharCode(encryptedCharCode);
+            }
+
+            return encryptedMessage;
+        }
+
+        // Function to decrypt an encrypted message using time-based one-time pad
+        function decrypt(encryptedMessage) {
+            const key = new Date().getTime().toString();
+            let decryptedMessage = '';
+
+            for (let i = 0; i < encryptedMessage.length; i++) {
+                const encryptedCharCode = encryptedMessage.charCodeAt(i);
+                const keyCharCode = key.charCodeAt(i % key.length);
+                const decryptedCharCode = encryptedCharCode ^ keyCharCode;
+                decryptedMessage += String.fromCharCode(decryptedCharCode);
+            }
+
+            return decryptedMessage;
+        }
+
+        // Function to encrypt the input message and display the encrypted result
+        function encryptAndDisplay() {
+            const messageInput = document.getElementById('message');
+            const encryptedDiv = document.getElementById('encrypted');
+
+            const message = messageInput.value;
+            const encrypted = encrypt(message);
+
+            encryptedDiv.innerHTML = encrypted;
+        }
+
+        // Function to decrypt the encrypted message and display the decrypted result
+        function decryptAndDisplay() {
+            const encryptedDiv = document.getElementById('encrypted');
+            const decryptedDiv = document.getElementById('decrypted');
+
+            const encrypted = encryptedDiv.innerHTML;
+            const decrypted = decrypt(encrypted);
+
+            decryptedDiv.innerHTML = decrypted;
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,250 @@
+  
+  db.dsSinhvien.aggregate{
+    _id: ObjectId("6131a2a278b3264add83259b"),
+    diemTB: 9.5,
+    dsDienthoai: '0123456789',
+    email: 'psphau@gmail.com',
+    gioitinh: 'Nam',
+    ho: 'Lê Văn',
+    malop: 'DHKTPM15A',
+    mssv: '19757591',
+    ngaysinh: ISODate("2001-05-04T00:00:00.000Z"),
+    ten: 'Hậu'
+  }
+
+db.dsSinhvien.aggregate([
+  {
+    $group:{
+      _id:"$malop", "soLuongSinhVien":{$sum:1}
+    }
+  },
+  {
+    $project:{
+      _id:0, malop:"$_id", soLuongSinhVien:1
+    }
+  }
+])
+
+
+
+
+
+db.dsSinhvien.aggregate([
+  {
+    $group:{
+      _id:"$malop", "DTB":{$avg:"$diemTB"}
+    }
+  },
+  {
+    $project:{
+      _id:0, "malop":"$_id", "DTB":1
+    }
+  }
+])
+
+
+
+
+
+
+
+
+db.dsSinhvien.aggregate([
+  {
+    $group:{_id:"$malop",DiemTBcuaLop: {$avg:"$diemTB"}}
+  },
+{
+  $project:{_id:0, malop:"$_id", DiemTBcuaLop: 1}
+  }
+  ])
+
+
+
+
+
+
+db.dsSinhvien.aggregate([
+  {
+    $group:{
+      _id:"$malop", "DTB":{$avg:"$diemTB"}, "soSv":{$sum:1}
+    }
+  },
+  {
+    $match:{
+      "DTB":{$gte:5}
+    }
+  },
+  {
+    $project:{
+      _id:0, "malop":"$_id", DTB:1, soSv:1
+    }
+  }
+])
+
+
+db.dsSinhvien.aggregate([
+  {
+    $match:{
+      "diemTB":{$gte:5, $lt:6.5}
+    }
+  },
+  {
+    $group:{
+      _id:"$malop", "soSV":{$sum:1}
+    }
+  },
+  {
+    $project:{
+      _id:0, malop:"$_id", soSV:1
+    }
+  }
+])
+
+
+
+
+
+
+db.dsSinhvien.aggregate([
+  {
+    $group:{
+      _id:"$malop", "soLuongSinhVien":{$sum:1}
+    }
+  },
+  {
+    $project:{
+      _id:0, malop:"$_id", soLuongSinhVien:1
+    }
+  }
+])
+
+db.dsSinhvien.aggregate([
+  {
+    $match:{
+      dsDienthoai:{$size:0}
+    }
+  },{
+    $group:{
+      _id:"$malop", slSV:{$sum:1}
+    }
+  },{
+    $project:{
+      _id:0, malop:"$_id", slSV:1
+    }
+  }
+])
+
+
+
+
+
+db.dsSinhvien.aggregate{
+  "_id": {
+    "$oid": "6131a2a278b3264add832588"
+  },
+  "diemTB": 9.5,
+  "dsDienthoai": [
+    "0947536844"
+  ],
+  "email": "Chuot@gmail.com",
+  "gioitinh": "Nam",
+  "ho": "Nguyễn Việt",
+  "malop": "DHKTPM15B",
+  "mssv": "19296011",
+  "ngaysinh": {
+    "$date": "2001-09-15T00:00:00.000Z"
+  },
+  "ten": "Anh"
+}
+
+
+db.dsLophoc.aggregate{
+  "_id": {
+    "$oid": "6131e5e97cf137f22a235cd0"
+  },
+  "macn": "KHMT",
+  "mslop": "DHKHMT15A",
+  "sisoDukien": 80,
+  "tenlop": "Đại học Khoa học Máy tính 15A"
+}
+
+
+
+
+db.dsSinhvien.aggregate([
+  {
+    $lookup: {
+      from: "dsLophoc",
+      localField: "malop",
+      foreignField: "mslop",
+      as: "lop"
+    }
+  },
+  {
+    $unwind: "$lop"
+  },
+  {
+    $group: {
+      _id: "$lop.mslop",
+      tenlop: { $first: "$lop.tenlop" },
+      sisoThucte: { $sum: 1 }
+    }
+  }
+  ,{
+    $project:{
+        _id:0,
+        "MaLop":"$_id",
+        "TenLop":"$tenlop",
+        "SiSoThucTe":"$sisoThucte"
+    }
+  }
+])
+
+db.dsLophoc.aggregate([
+  {
+    $lookup: {
+      from: "dsSinhvien",
+      localField: "mslop",
+      foreignField: "malop",
+      as: "sinhvien"
+    }
+  },
+  {
+    $project: {
+      _id: 1,
+      macn: 1,
+      mslop: 1,
+      sisoDukien: 1,
+      tenlop: 1,
+      sisoThucTe: { $size: "$sinhvien" }
+    }
+  }
+])
+
+
+db.dsLophoc.aggregate([ {$lookup: { from: 'dsSinhvien', localField: 'mslop', foreignField: 'malop', as: 'sinhvien' }},
+ {$project: { _id: 1,macn: 1,mslop: 1, sisoDukien: 1, tenlop: 1, sisoThucTe: {$size: '$sinhvien'} }} ])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
